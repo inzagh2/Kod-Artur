@@ -1,0 +1,90 @@
+global CHANGED
+CHANGED = False
+
+
+user_choice = -1
+
+tasks = []
+
+
+
+
+def show_tasks():
+    task_index = 0
+    for task in tasks: # zmienna task działa tylko lokalnie w funkcji
+        print("[" + str(task_index) + "] " + task)
+        task_index += 1
+
+def add_task():
+    task = input("Wpisz treść zadania: ")
+    tasks.append(task)
+    global CHANGED
+    CHANGED = True
+    print("Dodano zadanie!")
+
+def delete_task():
+    # input() zwraca zawsze string!!!
+    task_index = int(input("Podaj indeks zadania do usunięcia: "))
+
+    if task_index < 0 or task_index > len(tasks) - 1:   # przy indeksach 0, 1, 2, len(tasks) = 3
+        print("Zadanie o tym indeksie nie istnieje")
+        return # wychodzimy z funkcji, kończy wywołanie funkcji
+
+    tasks.pop(task_index)
+    global CHANGED
+    CHANGED = True
+    print("Usunięto zadanie")
+
+
+def save_tasks_to_file():
+    if not CHANGED:
+        print("Nie ma zmian do zapisu")
+        return
+    with open("tasks.txt", "w") as file:
+        for task in tasks:
+            file.write(task+"\n")
+    print("Zapisano zmiany!")
+    global CHANGED
+    CHANGED = False
+
+
+def load_tasks_from_file():
+    try:  # za pomocą tej konstrukcji łapiemy wyjątek FileNotFound, gdy pierwszy raz odpalamy aplikację i plik tekstowy jeszcze nie istnieje
+        with open("tasks.txt") as file:
+
+            for line in file.readlines(): #file.readlines() zwraca listę
+                tasks.append(line.strip())
+
+
+    except FileNotFoundError:
+        return # idzie dalej do 49
+
+load_tasks_from_file()
+
+while user_choice != 5:
+    if user_choice == 1:
+        show_tasks()
+
+    if user_choice == 2:
+        add_task()
+
+
+    if user_choice == 3:
+        delete_task()
+
+    if user_choice == 4:
+        save_tasks_to_file()
+
+    print()
+    print("1. Pokaż zadania")
+    print("2. Dodaj zadanie")
+    print("3. Usuń zadanie")
+    print("4. Zapisz zmiany do pliku")
+    print("5. Wyjdź")
+    print()
+    user_choice = int(input("Wybierz liczbę: "))
+
+
+# pomysły jak rozbudować listę: 1. Wybór niedostępnej opcji - czyli gdy poza 1-5 wpisze. 2. Zamiana listy na set lub dictionary. 3. Pobranie od użytkownika nazwy pliku
+# 4. Rozszerzyć listę o zadania zrobione, w trakcie. 5. Zmiana formatu zapisanych zadań np. na JSON, 6. Podział zadań na różne kategorie. 7. Automatyczny zapis przy wyjściu.
+
